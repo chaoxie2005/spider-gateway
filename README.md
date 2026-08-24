@@ -10,7 +10,7 @@
 - **JS 逆向还原**：`PyExecJS2` 执行 `services/*/js_code/` 下的加密参数生成与响应解密脚本
 - **部分失败容错**：单页失败不整体报错，仅全部页失败时抛出 `SpiderError`
 - **监控埋点**：`monitoring.metrics.track` 装饰器自动上报请求数/错误数/耗时/返回条数
-- **结构化日志**：loguru 双写 stderr 与 `logs/app.log`（10MB 轮转，保留 5 份）
+- **结构化日志**：loguru 双写 stderr 与 `logs/YYYY-MM-DD.log`（按天切分，保留 5 份）
 
 ## 项目结构
 
@@ -108,4 +108,4 @@ docker compose up -d   # Prometheus :9090, Grafana :3000（已预置 spider 仪�
 ## 日志
 
 - stderr：`HH:mm:ss | level | name | message`
-- `logs/app.log`：10MB 轮转，保留 5 份
+- `logs/YYYY-MM-DD.log`：按天命名，每天 0 点切分，保留最近 5 份

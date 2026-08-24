@@ -37,19 +37,15 @@ class WanHuoSpider(Spider):
         }
         self.client = httpx.AsyncClient()
 
-    async def send(self, request: WanHuoRequest):
+    async def send(self, request: WanHuoRequest) -> str:
         params = dict(self.base_params)
-        params["pageNum"] = request.page
-        params["pageSize"] = request.pagesize
+        params["pageNum"] = str(request.page)
+        params["pageSize"] = str(request.pagesize)
         logger.info("请求 pageNum={}, pageSize={}", request.page, request.pagesize)
 
-        try:
-            response = await self.client.get(self.base_url, params=params, headers=self.headers)
-            logger.success("请求 pageNum={} pageSize={} 成功", request.page, request.pagesize)
-        except Exception as e:
-            logger.exception("请求 pageNum={} 失败 错误={}", request.page, e)
-            raise
-        logger.info("响应状态 {} 耗时 {:.2f}s", response.status_code, response.elapsed.total_seconds())
+        response = await self.request_with_retry(
+            "GET", self.base_url, params=params, headers=self.headers
+        )
         return response.text
 
     async def parse(self, response) -> list[WanHuoRecord]:

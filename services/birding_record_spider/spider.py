@@ -1,7 +1,7 @@
 import httpx
-import asyncio
 import json
 import os
+from typing import Any
 from loguru import logger
 from base import Spider
 
@@ -35,7 +35,7 @@ class BirdingRecordSpider(Spider):
         'timestamp': '1786776592000',
     }
 
-    async def get_new_headers(self, limit: int, page: int):
+    async def get_new_headers(self, limit: int, page: int) -> tuple[dict[str, str], Any]:
         sign, requestId, timestamp, post_data = await self.ex_js(JS_PATH_1, "get_sign", {"limit": str(limit), "page": page})
         headers = dict(self.base_headers)
         headers['sign'] = sign
@@ -43,26 +43,15 @@ class BirdingRecordSpider(Spider):
         headers["requestId"] = requestId
         return headers, post_data
 
-    async def send(self, limit: int, page: int):
+    async def send(self, limit: int, page: int) -> Any:
         headers, post_data = await self.get_new_headers(limit, page)
         logger.info("请求 limit={} page={}", limit, page)
-        for attempt in range(3):
-            try:
-                response = await self.client.post(
-                        url=self.base_url,
-                        headers=headers,
-                        data=post_data,
-                )
-                logger.info("响应状态 {} 耗时 {:.2f}s", response.status_code, response.elapsed.total_seconds())
-                return response.json()
-            except httpx.ReadTimeout:
-                if attempt == 2:
-                    logger.exception("请求超时 page={}", page)
-                    raise
-                logger.warning("第 {} 次重试 page={}", attempt + 1, page)
-                await asyncio.sleep(2)   # 重试前等待
-
-    async def parse(self, response: dict[str, str]) -> list:
+        response = await self.request_with_retry(
+            "POST", self.base_url, headers=headers, data=post_data
+        )
+        return response.json()
+    
+    async def parse(self, response: dict[str, Any]) -> list:
         data = response.get("data")
         if not data:
             return []
