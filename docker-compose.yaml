@@ -1,0 +1,25 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml # 挂载prometheus.yaml文件
+      - prometheus_data:/prometheus # 挂载数据目录
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana # 挂载数据目录
+      - ./grafana/provisioning:/etc/grafana/provisioning # 自动加载数据源和仪表盘
+    depends_on:
+      - prometheus
+volumes:
+  prometheus_data:
+  grafana_data:
