@@ -3,6 +3,7 @@ import os
 import base64
 import json
 from loguru import logger
+from typing import Any
 from base import Spider
 from schemas.request.kaogula_spider import KaoGuJiaRequest
 from schemas.response.kaogula_spider import KaoGuJiaRecord
@@ -45,28 +46,23 @@ class KaoGuJiaSpider(Spider):
         }
         self.client = httpx.AsyncClient()
 
-    async def send(self, request:KaoGuJiaRequest):
+    async def send(self, request:KaoGuJiaRequest) -> Any:
         params = dict(self.base_params)
         params['page'] = str(request.page)
         params["limit"] = str(request.limit)
         params['sort_field'] = request.sort_field
         params['sort'] = str(request.sort)
         logger.info('请求 page={} limit={}', request.page, request.limit)
-        try:
-            response = await self.client.post(
-                url=self.base_url,
-                headers=self.headers,
-                params=params,
-                json=self.json_data
-            )
-        except Exception as e:
-            logger.exception("请求失败 page={}", request.page)
-            raise
-        logger.info("响应状态 {} 耗时 {:.2f}s", response.status_code, response.elapsed.total_seconds())
+        response = await self.request_with_retry(
+            "POST", self.base_url, headers=self.headers, params=params, json=self.json_data
+        )
         return response.json()
 
-    async def parse(self, base_data):
+    async def parse(self, base_data: dict) -> list[KaoGuJiaRecord]:
         records = base_data.get('items')
+        if not isinstance(records, list):
+            logger.warning("items 缺失或不是列表: {}", str(base_data)[:200])
+            return []
         return [
             KaoGuJiaRecord(
                 nick_name=str(record.get("nick_name")),
