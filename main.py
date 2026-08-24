@@ -6,7 +6,7 @@ from fastapi import Response
 from api.birding_record_spider import router as birding_router
 from api.kaogula_spider import router as kaogujia_router
 from api.wanhuozhengjuan import router as wanhuo_router
-from api.birding_record_spider import spider
+from api.birding_record_spider import spider as birding_spider
 from api.kaogula_spider import spider as kaogula_spider
 from api.wanhuozhengjuan import spider as wanhuo_spider
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
     logger.info("服务启动")
     yield
     logger.info("服务关闭, 关闭连接池")
-    await spider.client.aclose()   # 关闭连接池，避免 unclosed client 警告
+    await birding_spider.client.aclose()  # 关闭连接池，避免 unclosed client 警告
     await kaogula_spider.client.aclose()
     await wanhuo_spider.client.aclose()
 
