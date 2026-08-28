@@ -51,7 +51,10 @@ class BirdingRecordSpider(Spider):
         )
         return response.json()
     
-    async def parse(self, response: dict[str, Any]) -> list:
+    async def parse(self, response: Any) -> list:
+        if not isinstance(response, dict):
+            logger.warning("响应数据不是dict, 类型: {}", type(response).__name__)
+            return []
         data = response.get("data")
         if not data:
             return []
