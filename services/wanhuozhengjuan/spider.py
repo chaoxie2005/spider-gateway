@@ -3,6 +3,7 @@ import re
 import json
 import base64
 import os
+from typing import Any
 from base import Spider
 from schemas.request.wanhuozhengjuan import WanHuoRequest
 from schemas.response.wanhuozhengjuan import WanHuoRecord
@@ -48,7 +49,10 @@ class WanHuoSpider(Spider):
         )
         return response.text
 
-    async def parse(self, response) -> list[WanHuoRecord]:
+    async def parse(self, response: Any) -> list[WanHuoRecord]:
+        if not isinstance(response, dict):
+            logger.warning("响应数据不是dict, 类型: {}", type(response).__name__)
+            return []
         datalist = response.get("data", {}).get("dataList")
         if not isinstance(datalist, list):
             logger.warning("dataList 缺失或不是列表: {}", str(response)[:200])
