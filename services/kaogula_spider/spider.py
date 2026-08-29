@@ -1,14 +1,15 @@
-import httpx
-import os
 import base64
 import json
-from loguru import logger
+import os
 from typing import Any
+
+import httpx
+from loguru import logger
+
 from base import Spider
 from errors import ParseError
 from schemas.request.kaogula_spider import KaoGuJiaRequest
 from schemas.response.kaogula_spider import KaoGuJiaRecord
-
 
 JS_PATH = os.path.join(os.path.dirname(__file__), "js_code", "get_params.js")
 

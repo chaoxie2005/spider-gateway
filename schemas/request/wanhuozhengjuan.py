@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class WanHuoRequest(BaseModel):
     page: int = Field(default=1, description="起始页码")
     pagesize: int = Field(default=10, description="每页数量")

@@ -1,17 +1,19 @@
 import logging
 import sys
-from loguru import logger
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
-from fastapi import Response
+
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
-from api.birding_record_spider import router as birding_router
-from api.kaogula_spider import router as kaogujia_router
-from api.wanhuozhengjuan import router as wanhuo_router
-from api.birding_record_spider import spider as birding_spider
-from api.kaogula_spider import spider as kaogula_spider
-from api.wanhuozhengjuan import spider as wanhuo_spider
+from loguru import logger
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
+from api.birding_record_spider import router as birding_router
+from api.birding_record_spider import spider as birding_spider
+from api.kaogula_spider import router as kaogujia_router
+from api.kaogula_spider import spider as kaogula_spider
+from api.wanhuozhengjuan import router as wanhuo_router
+from api.wanhuozhengjuan import spider as wanhuo_spider
+
 
 class InterceptHandler(logging.Handler):
     """桥接标准 logging(含 uvicorn) 到 loguru，使 ASGI 层异常落入日志文件"""
