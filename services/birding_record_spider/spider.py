@@ -4,6 +4,7 @@ import os
 from typing import Any
 from loguru import logger
 from base import Spider
+from errors import ParseError
 
 JS_PATH_1 = os.path.join(os.path.dirname(__file__), "js_code", "get_params.js")
 JS_PATH_2 = os.path.join(os.path.dirname(__file__), "js_code", "dec_response.js")
@@ -55,7 +56,10 @@ class BirdingRecordSpider(Spider):
         data = response.get("data")
         if not data:
             return []
-        return json.loads(await self.ex_js(JS_PATH_2 ,"dec_response", data))
+        try:
+            return json.loads(await self.ex_js(JS_PATH_2, "dec_response", data))
+        except Exception as e:  # 边界层翻译：解密失败归为 ParseError
+            raise ParseError(f"解密失败({type(e).__name__}): {e}") from e
 
     async def fetch_page(self, page: int, request) -> list:
         return await self.parse(await self.send(request.limit, page))

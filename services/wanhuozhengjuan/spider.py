@@ -4,6 +4,7 @@ import json
 import base64
 import os
 from base import Spider
+from errors import ParseError
 from schemas.request.wanhuozhengjuan import WanHuoRequest
 from schemas.response.wanhuozhengjuan import WanHuoRecord
 from loguru import logger
@@ -72,12 +73,16 @@ class WanHuoSpider(Spider):
         # 契约检查：响应体应该是裸的 base64 密文（字符串）
         if not isinstance(result, str) or not result:
             logger.warning("响应格式异常 page={}: {}", page, str(result)[:200])
-            raise ValueError(f"响应不是加密密文: {str(result)[:100]}")
+            raise ParseError(f"响应不是加密密文: {str(result)[:100]}")
 
         data = re.sub(r"\s+", "", result)  # 去空白，防复制污染
-        dec_b64 = await self.ex_js(JS_path, "decrypt", data)
-        # JS 返回 base64（纯 ASCII，绕开 execjs 的 GBK 编码坑），这里解码成 JSON
-        raw = base64.b64decode(dec_b64)
-        records = await self.parse(json.loads(raw.decode("utf-8")))
+        try:
+            dec_b64 = await self.ex_js(JS_path, "decrypt", data)
+            # JS 返回 base64（纯 ASCII，绕开 execjs 的 GBK 编码坑），这里解码成 JSON
+            raw = base64.b64decode(dec_b64)
+            payload = json.loads(raw.decode("utf-8"))
+        except Exception as e:  # 边界层翻译：解密/解码任何失败都归为 ParseError
+            raise ParseError(f"第 {page} 页解密失败({type(e).__name__}): {e}") from e
+        records = await self.parse(payload)
         logger.info("第 {} 页，解出 {} 条数据", page, len(records))
         return records
