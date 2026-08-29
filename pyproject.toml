@@ -12,3 +12,10 @@ dependencies = [
     "PyExecJS2>=1.6.1",
     "uvicorn>=0.52.3",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "respx>=0.23.1",
+]
