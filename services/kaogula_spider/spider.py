@@ -5,6 +5,7 @@ import json
 from loguru import logger
 from typing import Any
 from base import Spider
+from errors import ParseError
 from schemas.request.kaogula_spider import KaoGuJiaRequest
 from schemas.response.kaogula_spider import KaoGuJiaRecord
 
@@ -82,10 +83,13 @@ class KaoGuJiaSpider(Spider):
         res = await self.send(req)
         if not isinstance(res, dict) or "data" not in res:
             logger.warning("响应格式异常 page={}: {}", page, str(res)[:200])
-            raise ValueError(f"响应不是加密密文: {res}")
-        dec_base64 = await self.ex_js(JS_PATH, "decryptAES", res["data"])
-        raw_bytes = base64.b64decode(dec_base64)
-        data = json.loads(raw_bytes.decode("utf-8"))
+            raise ParseError(f"响应不是加密密文: {res}")
+        try:
+            dec_base64 = await self.ex_js(JS_PATH, "decryptAES", res["data"])
+            raw_bytes = base64.b64decode(dec_base64)
+            data = json.loads(raw_bytes.decode("utf-8"))
+        except Exception as e:  # 边界层翻译：解密/解码任何失败都归为 ParseError
+            raise ParseError(f"第 {page} 页解密失败({type(e).__name__}): {e}") from e
         records = await self.parse(data)
         logger.info("第 {} 页解出 {} 条", page, len(records))
         return records
