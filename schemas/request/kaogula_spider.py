@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 
 
-
 class KaoGuJiaRequest(BaseModel):
     limit: int = Field(default=50, description="一次爬取的数量")
     page: int = Field(default=1,ge=1, description="待爬取的页码")

@@ -18,4 +18,8 @@ dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "respx>=0.23.1",
+    "ruff>=0.16.5",
 ]
+
+[tool.ruff.lint]
+ignore = ["E501"]  # 长 header/token 行暂不治理，等配置化重构时一并解决

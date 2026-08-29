@@ -1,8 +1,10 @@
-import httpx
 import json
 import os
 from typing import Any
+
+import httpx
 from loguru import logger
+
 from base import Spider
 from errors import ParseError
 

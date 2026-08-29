@@ -1,4 +1,5 @@
-from errors import RateLimitedError, NetworkError, SpiderError, AllPagesFailedError
+from errors import AllPagesFailedError, NetworkError, RateLimitedError, SpiderError
+
 
 def test_rate_limited_is_network_erro():
     """设计承诺: 429 是网络错误的一种 except NetworkError 要能兜住它"""

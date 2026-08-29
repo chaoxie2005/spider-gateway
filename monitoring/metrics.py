@@ -1,7 +1,8 @@
-from prometheus_client import Counter, Histogram
-from functools import wraps
 import time
+from functools import wraps
+
 from loguru import logger
+from prometheus_client import Counter, Histogram
 
 # Counter: 总请求数。labels 指定维度，之后按 spider/endpoint 拆分看
 SPIDER_REQUESTS = Counter(

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class BirdingRecordSpiderRequest(BaseModel):
     page: int = Field(default=1,ge=1, description="待爬取的页码")
     limit: int = Field(default=20,ge=1, le=100, description="一次返回的条数")

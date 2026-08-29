@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 from loguru import logger
+
+from monitoring.metrics import track
 from schemas.request.wanhuozhengjuan import WanHuoRequest
 from schemas.response.wanhuozhengjuan import WanHuoResponse
 from services.wanhuozhengjuan.spider import WanHuoSpider
-from monitoring.metrics import track
 
 router = APIRouter()
 

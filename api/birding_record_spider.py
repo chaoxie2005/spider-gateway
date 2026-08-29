@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 from loguru import logger
+
+from monitoring.metrics import track
 from schemas.request.birding_record_spider import BirdingRecordSpiderRequest
 from schemas.response.birding_record_spider import BirdingRecordSpiderReponse
 from services.birding_record_spider.spider import BirdingRecordSpider
-from monitoring.metrics import track
 
 router = APIRouter()
 

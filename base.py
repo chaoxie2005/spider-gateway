@@ -1,13 +1,16 @@
-import time
 import asyncio
+import time
+from abc import ABC, abstractmethod
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
+from typing import Any
+
 import execjs
 import httpx
-from abc import ABC, abstractmethod
-from typing import Any
 from loguru import logger
-from email.utils import parsedate_to_datetime
-from datetime import datetime, timezone
+
 from errors import AllPagesFailedError, AuthError, NetworkError, RateLimitedError
+
 
 class Spider(ABC):
     # 子类契约：必须在 __init__ 中初始化连接池实例
@@ -23,7 +26,7 @@ class Spider(ABC):
                 js_code = f.read()
             ctx = execjs.compile(js_code)
             return ctx.call(func_name, *args)
-        except Exception as e:
+        except Exception:
             logger.exception("JS 调用 {} 失败", func_name)
             raise
         finally:
@@ -42,7 +45,7 @@ class Spider(ABC):
         except ValueError:
             pass  # 不是秒数，继续尝试日期格式
         try:  # 格式二：HTTP 日期，如 "Wed, 21 Oct 2026 07:28:00 GMT"
-            delay = (parsedate_to_datetime(raw) - datetime.now(timezone.utc)).total_seconds()
+            delay = (parsedate_to_datetime(raw) - datetime.now(UTC)).total_seconds()
             return max(delay, 0.0)
         except (TypeError, ValueError, OverflowError):
             return self.retry_delay
@@ -98,17 +101,14 @@ class Spider(ABC):
     @abstractmethod
     async def send(self, *args, **kwargs) -> Any:
         """发送请求"""
-        pass
 
     @abstractmethod
     async def parse(self, *args, **kwargs) -> Any:
         """"解析响应数据"""
-        pass
 
     @abstractmethod
     async def fetch_page(self, page: int, request) -> list:
         """子类实现：抓取并解析第 page 页，返回记录列表"""
-        pass
 
     async def main(self, request) -> list:
         pages = range(request.page, request.page + request.pages)

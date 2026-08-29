@@ -1,14 +1,16 @@
-import httpx
-import re
-import json
 import base64
+import json
 import os
+import re
 from typing import Any
+
+import httpx
+from loguru import logger
+
 from base import Spider
 from errors import ParseError
 from schemas.request.wanhuozhengjuan import WanHuoRequest
 from schemas.response.wanhuozhengjuan import WanHuoRecord
-from loguru import logger
 
 JS_path = os.path.join(os.path.dirname(__file__), "js_code", "get_decresponse.js")
 
