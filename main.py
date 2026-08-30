@@ -13,6 +13,8 @@ from api.kaogula_spider import router as kaogujia_router
 from api.kaogula_spider import spider as kaogula_spider
 from api.wanhuozhengjuan import router as wanhuo_router
 from api.wanhuozhengjuan import spider as wanhuo_spider
+from api.shenzhenzhengjuan import spider as shenzhenzhengjuan_spider
+from api.shenzhenzhengjuan import router as shengzhenzhengjuan_router
 
 
 class InterceptHandler(logging.Handler):
@@ -54,6 +56,7 @@ async def lifespan(app: FastAPI):
     await birding_spider.client.aclose()  # 关闭连接池，避免 unclosed client 警告
     await kaogula_spider.client.aclose()
     await wanhuo_spider.client.aclose()
+    await shenzhenzhengjuan_spider.client.aclose()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -62,6 +65,7 @@ PREFIX = "/api/spider"
 app.include_router(birding_router, prefix=PREFIX)
 app.include_router(kaogujia_router, prefix=PREFIX)
 app.include_router(wanhuo_router, prefix=PREFIX)
+app.include_router(shengzhenzhengjuan_router, prefix=PREFIX)
 
 @app.get("/")
 def read_root():
