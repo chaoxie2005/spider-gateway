@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 
+
 class ShenZhenZhengJuanRecord(BaseModel):
     transaction_date: str = Field(description="交易日期")
     exchange: str = Field(description="交易所")

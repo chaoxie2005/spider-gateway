@@ -43,7 +43,7 @@ class KaoGuJiaSpider(Spider):
                     'sort': '0',
                 }
         self.json_data = {
-            'keyword': '',
+            'keyword': 'None',
             'author_type': 0,
         }
         self.client = httpx.AsyncClient()

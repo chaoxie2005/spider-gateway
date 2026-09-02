@@ -1,20 +1,14 @@
-from fastapi import APIRouter
-from loguru import logger
-
-from monitoring.metrics import track
+from api.factory import create_spider_router
 from schemas.request.kaogula_spider import KaoGuJiaRequest
 from schemas.response.kaogula_spider import kaoGuJiaReponse
 from services.kaogula_spider.spider import KaoGuJiaSpider
 
-router = APIRouter()
-
 spider = KaoGuJiaSpider()
 
-
-@router.post("/kaogujia", response_model=kaoGuJiaReponse)
-@track(spider="kaogujia", endpoint="/api/spider/kaogujia")
-async def get_kaogujia_records(request: KaoGuJiaRequest):
-    logger.info("收到请求: {}", request.model_dump())
-    data = await spider.main(request)
-    logger.info("返回 {} 条", len(data))
-    return {"code": 0, "message": "ok", "data": data}
+router = create_spider_router(
+    spider=spider,
+    path="/kaogujia",
+    spider_name="kaogujia",
+    request_model=KaoGuJiaRequest,
+    response_model=kaoGuJiaReponse,
+)

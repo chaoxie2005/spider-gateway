@@ -1,20 +1,14 @@
-from fastapi import APIRouter
-from loguru import logger
-
-from monitoring.metrics import track
+from api.factory import create_spider_router
 from schemas.request.wanhuozhengjuan import WanHuoRequest
 from schemas.response.wanhuozhengjuan import WanHuoResponse
 from services.wanhuozhengjuan.spider import WanHuoSpider
 
-router = APIRouter()
-
 spider = WanHuoSpider()
 
-
-@router.post("/wanhongzhengjuan", response_model=WanHuoResponse)
-@track(spider="wanhuozhengjuan", endpoint="/api/spider/wanhongzhengjuan")
-async def get_wanhuo_records(request: WanHuoRequest):
-    logger.info("收到请求: {}", request.model_dump())
-    data = await spider.main(request)
-    logger.info("返回 {} 条", len(data))
-    return {"code": 0, "message": "ok", "data": data}
+router = create_spider_router(
+    spider=spider,
+    path="/wanhongzhengjuan",
+    spider_name="wanhuozhengjuan",
+    request_model=WanHuoRequest,
+    response_model=WanHuoResponse,
+)

@@ -11,10 +11,10 @@ from api.birding_record_spider import router as birding_router
 from api.birding_record_spider import spider as birding_spider
 from api.kaogula_spider import router as kaogujia_router
 from api.kaogula_spider import spider as kaogula_spider
+from api.shenzhenzhengjuan import router as shengzhenzhengjuan_router
+from api.shenzhenzhengjuan import spider as shenzhenzhengjuan_spider
 from api.wanhuozhengjuan import router as wanhuo_router
 from api.wanhuozhengjuan import spider as wanhuo_spider
-from api.shenzhenzhengjuan import spider as shenzhenzhengjuan_spider
-from api.shenzhenzhengjuan import router as shengzhenzhengjuan_router
 
 
 class InterceptHandler(logging.Handler):

@@ -1,7 +1,10 @@
-from .factory import create_spider_router
 from schemas.request.shenzhenzhengjuan import ShenZhenZhengJuanRequest
-from schemas.response.shenzhenzhengjuan import ShenZhenZhengJuanRecord, ShenZhenZhengJuanResponse
+from schemas.response.shenzhenzhengjuan import (
+    ShenZhenZhengJuanResponse,
+)
 from services.shenzhenzhengjuan.spider import ShenZhenZhengJuanSpider
+
+from .factory import create_spider_router
 
 spider = ShenZhenZhengJuanSpider()
 
